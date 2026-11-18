@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canvas-primary: #F7F8FC;
+    --surface-pure: #FFFFFF;
+    --primary-kinetic: #7562F6;
+    --accent-cyan: #53B7E8;
+    --border-light: #E9EAF2;
+  }
+
+  body {
+    background-color: var(--canvas-primary);
+    color: #171827;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Monospace figures always tabular for metrics & latency meters */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Level 1: Standard Glass Card Surface */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid #E9EAF2;
+    box-shadow: 0 4px 24px -2px rgba(23, 24, 39, 0.04), 0 1px 2px rgba(23, 24, 39, 0.02);
+  }
+
+  /* Level 2: Floating Hull, Modals & Command Bars */
+  .glass-floating {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 16px 36px -4px rgba(117, 98, 246, 0.12), 0 4px 12px rgba(23, 24, 39, 0.04);
+  }
+
+  /* Kinetic Violet Button */
+  .btn-primary {
+    background: linear-gradient(180deg, #7E6BFA 0%, #6B55F2 100%);
+    color: #FFFFFF;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 4px 14px 0 rgba(117, 98, 246, 0.28);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(180deg, #8E7DFF 0%, #7560F8 100%);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 8px 24px -2px rgba(117, 98, 246, 0.4);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Secondary Glass Button */
+  .btn-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid #E9EAF2;
+    color: #171827;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(23, 24, 39, 0.02);
+    transition: all 0.2s ease;
+  }
+  .btn-glass:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #D3D0F8;
+    color: #5741D7;
+  }
+
+  /* Modern Glass Input */
+  .input-glass {
+    background: #FFFFFF;
+    border: 1px solid #E9EAF2;
+    color: #171827;
+    transition: all 0.2s ease;
+  }
+  .input-glass:focus {
+    outline: none;
+    border-color: #7562F6;
+    box-shadow: 0 0 0 3px rgba(117, 98, 246, 0.15);
+  }
+
+  /* Monospace Telemetry Pill */
+  .pill-telemetry {
+    background: rgba(238, 236, 255, 0.6);
+    border: 1px solid rgba(200, 196, 215, 0.5);
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D9D8ED;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #85899A;
+}
+
