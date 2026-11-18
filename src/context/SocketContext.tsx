@@ -21,7 +21,24 @@ const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
-  const [activeDeviceId, setActiveDeviceId] = useState<string | null>(null);
+  const [activeDeviceId, setActiveDeviceIdState] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('activeDeviceId') || null;
+    } catch {
+      return null;
+    }
+  });
+
+  const setActiveDeviceId = (id: string | null) => {
+    setActiveDeviceIdState(id);
+    try {
+      if (id) {
+        localStorage.setItem('activeDeviceId', id);
+      } else {
+        localStorage.removeItem('activeDeviceId');
+      }
+    } catch {}
+  };
   const [robotState, setRobotState] = useState<RobotState>('idle');
   const [telemetry, setTelemetry] = useState<DeviceHeartbeat | null>(null);
   const [deviceStatuses, setDeviceStatuses] = useState<Record<string, DeviceStatus>>({});
@@ -40,7 +57,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setTelemetry({
         deviceId: 'esp32_demo_1',
         timestamp: Date.now(),
-        batteryLevel: 92,
         wifiRSSI: -54,
         freeHeap: 184320,
         uptimeSeconds: 7420,

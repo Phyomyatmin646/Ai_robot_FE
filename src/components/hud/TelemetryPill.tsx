@@ -1,5 +1,5 @@
 import React from 'react';
-import { Battery, BatteryCharging, Cpu, Signal, Clock } from 'lucide-react';
+import { Zap, Cpu, Signal, Clock } from 'lucide-react';
 import type { DeviceHeartbeat } from '../../types';
 import { cn } from '../../utils/cn';
 
@@ -18,7 +18,7 @@ export const TelemetryPill: React.FC<TelemetryPillProps> = ({ telemetry, classNa
     );
   }
 
-  const { batteryLevel = 85, wifiRSSI = -55, freeHeap = 184320, uptimeSeconds = 3600 } = telemetry;
+  const { wifiRSSI = -55, freeHeap = 184320, uptimeSeconds = 3600 } = telemetry;
 
   // Format uptime
   const hours = Math.floor(uptimeSeconds / 3600);
@@ -39,14 +39,10 @@ export const TelemetryPill: React.FC<TelemetryPillProps> = ({ telemetry, classNa
 
   return (
     <div className={cn('flex flex-wrap items-center gap-2 font-mono text-xs', className)}>
-      {/* Battery */}
+      {/* DC Direct Power (No Battery) */}
       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/70 border border-neutral-border shadow-sm">
-        {batteryLevel > 90 ? (
-          <BatteryCharging className="w-3.5 h-3.5 text-emerald-500" />
-        ) : (
-          <Battery className={cn('w-3.5 h-3.5', batteryLevel < 20 ? 'text-rose-500' : 'text-emerald-500')} />
-        )}
-        <span className="font-medium text-neutral-void">{batteryLevel}%</span>
+        <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+        <span className="font-medium text-neutral-void">USB 5V</span>
       </div>
 
       {/* Wi-Fi RSSI */}

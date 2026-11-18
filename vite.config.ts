@@ -15,8 +15,9 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: process.env.VITE_BACKEND_URL || 'https://107.23.154.150.sslip.io',
         changeOrigin: true,
+        secure: false,
         configure: (proxy) => {
           proxy.on('error', () => {
             // Suppress terminal ECONNREFUSED logs when backend is offline
@@ -24,8 +25,9 @@ export default defineConfig({
         },
       },
       '/health': {
-        target: 'http://localhost:3000',
+        target: process.env.VITE_BACKEND_URL || 'https://107.23.154.150.sslip.io',
         changeOrigin: true,
+        secure: false,
         configure: (proxy) => {
           proxy.on('error', () => {
             // Suppress terminal ECONNREFUSED logs when backend is offline
@@ -33,9 +35,10 @@ export default defineConfig({
         },
       },
       '/socket.io': {
-        target: 'http://localhost:3000',
+        target: process.env.VITE_BACKEND_URL || 'https://107.23.154.150.sslip.io',
         ws: true,
         changeOrigin: true,
+        secure: false,
         configure: (proxy) => {
           proxy.on('error', () => {
             // Suppress terminal ECONNREFUSED logs when backend is offline

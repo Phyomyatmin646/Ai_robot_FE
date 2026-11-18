@@ -59,7 +59,10 @@ export const authApi = {
   },
 
   linkTelegram: async (telegramChatId: string) => {
-    const res = await apiClient.post<ApiResponse<{ linked: boolean }>>('/users/telegram/link', { telegramChatId });
+    const res = await apiClient.post<ApiResponse<{ linked: boolean }>>('/users/telegram/link', {
+      chatId: telegramChatId,
+      telegramChatId,
+    });
     return res.data;
   },
 

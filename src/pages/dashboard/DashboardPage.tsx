@@ -16,6 +16,7 @@ import {
   Smile,
   ShieldCheck,
   CheckCircle2,
+  Zap,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
@@ -167,19 +168,22 @@ export const DashboardPage: React.FC = () => {
           <AuraBeacon state={robotState} size="sm" showLabel={false} />
         </div>
 
-        {/* Battery & Wi-Fi */}
+        {/* Power Supply & Wi-Fi */}
         <div className="p-5 rounded-3xl glass-card flex items-center justify-between">
           <div>
-            <span className="text-xs text-neutral-slate block">ဘက်ထရီ & Wi-Fi</span>
+            <span className="text-xs text-neutral-slate block">ပါဝါ & Wi-Fi လိုင်း</span>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl font-bold font-mono text-neutral-void">
-                {telemetry?.batteryLevel ?? 92}%
+              <span className="text-base sm:text-lg font-bold font-mono text-amber-600 flex items-center gap-1.5">
+                <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <span>USB 5V DC</span>
               </span>
-              <span className="text-xs font-semibold text-emerald-600">● Wi-Fi ကောင်းမွန်</span>
+              <span className="text-xs font-semibold text-emerald-600">
+                ● {telemetry?.wifiRSSI ? `${telemetry.wifiRSSI} dBm` : 'Wi-Fi ချိတ်ဆက်ပြီး'}
+              </span>
             </div>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
-            OK
+          <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs">
+            ONLINE
           </div>
         </div>
 

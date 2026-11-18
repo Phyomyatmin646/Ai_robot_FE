@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Cpu,
@@ -19,7 +19,7 @@ import { formatDate } from '../../utils/cn';
 
 export const DevicesPage: React.FC = () => {
   const queryClient = useQueryClient();
-  const { setActiveDeviceId, activeDeviceId } = useSocket();
+  const { setActiveDeviceId, activeDeviceId, deviceStatuses } = useSocket();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [createdKey, setCreatedKey] = useState<string | null>(null);
@@ -131,6 +131,12 @@ export const DevicesPage: React.FC = () => {
     },
   });
 
+  useEffect(() => {
+    if (devices.length > 0 && !activeDeviceId) {
+      setActiveDeviceId(devices[0].id);
+    }
+  }, [devices, activeDeviceId, setActiveDeviceId]);
+
   const handleCopyKey = () => {
     if (createdKey) {
       navigator.clipboard.writeText(createdKey);
@@ -216,15 +222,22 @@ export const DevicesPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-medium ${
-                      device.status === 'online'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-neutral-border/60 text-neutral-slate border border-neutral-border'
-                    }`}
-                  >
-                    {device.status}
-                  </span>
+                  {(() => {
+                    const liveStatus = deviceStatuses[device.id] || device.status;
+                    const isOnline = liveStatus === 'online';
+                    return (
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-medium flex items-center gap-1.5 ${
+                          isOnline
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : 'bg-neutral-border/60 text-neutral-slate border border-neutral-border'
+                        }`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-400'}`} />
+                        {liveStatus}
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 <div className="mt-5 space-y-2 py-3 border-y border-neutral-border/60 text-xs font-mono">

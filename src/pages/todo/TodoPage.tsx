@@ -10,6 +10,7 @@ import {
   Clock,
   Tag,
   Volume2,
+  Send,
 } from 'lucide-react';
 import { todoApi, CreateTodoParams } from '../../api/todo.api';
 import { TodoPriority, TodoStatus } from '../../types';
@@ -175,6 +176,10 @@ export const TodoPage: React.FC = () => {
                           <span className="flex items-center gap-0.5 text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded ml-1">
                             <Volume2 className="w-3 h-3" />
                             Alarm Armed
+                          </span>
+                          <span className="flex items-center gap-0.5 text-[10px] text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded">
+                            <Send className="w-3 h-3" />
+                            Telegram
                           </span>
                         </div>
                       )}

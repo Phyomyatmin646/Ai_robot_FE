@@ -24,7 +24,7 @@ import type { DeviceSettings } from '../../types';
 export const DeviceDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const { telemetry, robotState, lastTouch } = useSocket();
+  const { telemetry, robotState, lastTouch, deviceStatuses } = useSocket();
 
   // Load device info
   const { data: devRes } = useQuery({
@@ -136,9 +136,22 @@ export const DeviceDetailPage: React.FC = () => {
                 <h1 className="text-xl sm:text-2xl font-display font-bold text-neutral-void">
                   {device?.name || 'ESP32 Voice Companion'}
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  {device?.status || 'online'}
-                </span>
+                {(() => {
+                  const liveStatus = (device?.id && deviceStatuses[device.id]) || device?.status || 'offline';
+                  const isOnline = liveStatus === 'online';
+                  return (
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-medium flex items-center gap-1.5 ${
+                        isOnline
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-neutral-border/60 text-neutral-slate border border-neutral-border'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-400'}`} />
+                      {liveStatus}
+                    </span>
+                  );
+                })()}
               </div>
               <p className="text-xs font-mono text-neutral-slate mt-1">
                 MAC: {device?.macAddress} • Firmware v{device?.firmwareVersion} • Model: {device?.hardwareVersion}
