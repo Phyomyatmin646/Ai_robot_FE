@@ -121,3 +121,70 @@ export async function deleteAudioTrack(id: string): Promise<void> {
     console.warn('Failed to delete track from IndexedDB', err);
   }
 }
+
+/**
+ * Decodes any audio file (MP3, WAV, AAC, M4A, OGG) using the browser's Web Audio API
+ * and converts it into a standard 16,000 Hz, 16-bit Mono PCM WAV file for ESP32 hardware playback.
+ */
+export async function convertAudioFileToWav(file: File): Promise<{ wavFile: File; duration: number }> {
+  const arrayBuffer = await file.arrayBuffer();
+  const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+  const audioCtx = new AudioContextClass();
+  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+  const duration = Math.round(audioBuffer.duration);
+
+  // Resample and downmix to 16000 Hz Mono using OfflineAudioContext
+  const targetSampleRate = 16000;
+  const totalFrames = Math.ceil(audioBuffer.duration * targetSampleRate);
+  const offlineCtx = new OfflineAudioContext(1, totalFrames, targetSampleRate);
+  const source = offlineCtx.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(offlineCtx.destination);
+  source.start(0);
+
+  const renderedBuffer = await offlineCtx.startRendering();
+  audioCtx.close();
+
+  const channelData = renderedBuffer.getChannelData(0);
+  const numSamples = channelData.length;
+  const wavBuffer = new ArrayBuffer(44 + numSamples * 2);
+  const view = new DataView(wavBuffer);
+
+  // RIFF Chunk Descriptor
+  writeAscii(view, 0, 'RIFF');
+  view.setUint32(4, 36 + numSamples * 2, true);
+  writeAscii(view, 8, 'WAVE');
+
+  // fmt sub-chunk
+  writeAscii(view, 12, 'fmt ');
+  view.setUint32(16, 16, true); // Subchunk1Size (16 for PCM)
+  view.setUint16(20, 1, true);  // AudioFormat (1 = PCM)
+  view.setUint16(22, 1, true);  // NumChannels (1 = Mono)
+  view.setUint32(24, targetSampleRate, true); // SampleRate
+  view.setUint32(28, targetSampleRate * 2, true); // ByteRate (SampleRate * 1 channel * 2 bytes)
+  view.setUint16(32, 2, true);  // BlockAlign (1 channel * 2 bytes)
+  view.setUint16(34, 16, true); // BitsPerSample (16-bit)
+
+  // data sub-chunk
+  writeAscii(view, 36, 'data');
+  view.setUint32(40, numSamples * 2, true);
+
+  // Write 16-bit PCM samples with clipping protection
+  let offset = 44;
+  for (let i = 0; i < numSamples; i++) {
+    const s = Math.max(-1, Math.min(1, channelData[i]));
+    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+    offset += 2;
+  }
+
+  const cleanName = file.name.replace(/\.[^/.]+$/, '') + '.wav';
+  const wavFile = new File([wavBuffer], cleanName, { type: 'audio/wav' });
+
+  return { wavFile, duration };
+}
+
+function writeAscii(view: DataView, offset: number, string: string): void {
+  for (let i = 0; i < string.length; i++) {
+    view.setUint8(offset + i, string.charCodeAt(i));
+  }
+}

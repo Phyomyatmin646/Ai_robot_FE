@@ -24,6 +24,7 @@ import {
   getCustomAudioTracks,
   getAudioBlobUrl,
   deleteAudioTrack,
+  convertAudioFileToWav,
   type CustomAudioTrack,
 } from '../../utils/audioStorage';
 
@@ -159,7 +160,7 @@ export const AudioLibraryPage: React.FC = () => {
   // Play on Robot Mutation
   const playOnRobotMutation = useMutation({
     mutationFn: async (id: string) => {
-      const targetDevice = activeDeviceId || 'esp32_demo_1';
+      const targetDevice = activeDeviceId || '6afc90a09b5d5190078ba835';
       // Attempt backend API call
       try {
         await audioApi.playOnDevice(id, targetDevice);
@@ -184,7 +185,7 @@ export const AudioLibraryPage: React.FC = () => {
   // Stop Robot Playback Mutation
   const stopOnRobotMutation = useMutation({
     mutationFn: async () => {
-      const targetDevice = activeDeviceId || 'esp32_demo_1';
+      const targetDevice = activeDeviceId || '6afc90a09b5d5190078ba835';
       try {
         await audioApi.stopOnDevice(targetDevice);
       } catch (err) {
@@ -274,37 +275,46 @@ export const AudioLibraryPage: React.FC = () => {
     setIsSubmitting(true);
     setUploadError(null);
 
-    const trackId = `custom_audio_${Date.now()}`;
-    const newTrack: CustomAudioTrack = {
-      id: trackId,
-      fileName: uploadTitle.trim(),
-      englishName: uploadFile.name,
-      category: uploadCategory,
-      duration: uploadDuration || 120,
-      fileSize: uploadFile.size,
-      description: uploadDesc.trim() || 'အသုံးပြုသူ ကိုယ်တိုင် တင်သွင်းထားသော အသံဖိုင်',
-      audioType: uploadCategory,
-      createdAt: Date.now(),
-      isCustom: true,
-    };
-
     try {
-      // 1. Save track and blob in client's IndexedDB for persistence
-      await saveAudioTrack(newTrack, uploadFile);
+      // 1. Convert MP3/WAV/Audio to 16,000 Hz 16-bit Mono PCM WAV for direct ESP32 hardware playback
+      const { wavFile, duration: calculatedDuration } = await convertAudioFileToWav(uploadFile);
+      const trackDuration = uploadDuration || calculatedDuration;
 
-      // 2. Attempt uploading to backend API if reachable
+      // 2. Upload to Backend MongoDB GridFS
+      const formData = new FormData();
+      formData.append('file', wavFile);
+      formData.append('title', uploadTitle.trim());
+      formData.append('category', uploadCategory);
+      formData.append('duration', String(trackDuration));
+
+      let realTrackId = `custom_audio_${Date.now()}`;
       try {
-        const formData = new FormData();
-        formData.append('file', uploadFile);
-        formData.append('title', uploadTitle);
-        formData.append('category', uploadCategory);
-        formData.append('duration', String(uploadDuration || 0));
-        await audioApi.uploadAudio(formData);
+        const res = await audioApi.uploadAudio(formData);
+        if (res.data?.id) {
+          realTrackId = res.data.id;
+        }
       } catch (backendErr) {
-        console.warn('Backend upload skipped (will use client-stored copy):', backendErr);
+        console.warn('Backend upload error (falling back to client ID):', backendErr);
       }
 
+      const newTrack: CustomAudioTrack = {
+        id: realTrackId,
+        fileName: uploadTitle.trim(),
+        englishName: uploadFile.name,
+        category: uploadCategory,
+        duration: trackDuration || 120,
+        fileSize: wavFile.size,
+        description: uploadDesc.trim() || 'အသုံးပြုသူ ကိုယ်တိုင် တင်သွင်းထားသော အသံဖိုင်',
+        audioType: uploadCategory,
+        createdAt: Date.now(),
+        isCustom: true,
+      };
+
+      // 3. Save track and blob in client's IndexedDB for caching
+      await saveAudioTrack(newTrack, wavFile);
+
       setUploadSuccess(true);
+      queryClient.invalidateQueries({ queryKey: ['server-audios'] });
       await refetchCustomTracks();
 
       setTimeout(() => {
