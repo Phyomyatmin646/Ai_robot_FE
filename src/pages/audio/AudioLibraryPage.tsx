@@ -140,7 +140,7 @@ export const AudioLibraryPage: React.FC = () => {
   });
 
   const serverTracks: DisplayAudioTrack[] = (serverAudiosRes?.data || []).map((item) => ({
-    id: item.id,
+    id: item.id || (item as any)._id,
     fileName: item.fileName,
     category: (item.audioType as string) || 'stories',
     duration: item.duration || 120,
