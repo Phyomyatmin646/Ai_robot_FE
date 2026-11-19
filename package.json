@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "assign-robot": "node scripts/assign-robot.cjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.11",

@@ -32,7 +32,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/devices" element={<DevicesPage />} />
           <Route path="/devices/:id" element={<DeviceDetailPage />} />
-          <Route path="/conversations" element={<ConversationsPage />} />
+          <Route path="/conversations" element={<Navigate to="/" replace />} />
           <Route path="/audio" element={<AudioLibraryPage />} />
           <Route path="/todo" element={<TodoPage />} />
           <Route path="/reminders" element={<RemindersPage />} />

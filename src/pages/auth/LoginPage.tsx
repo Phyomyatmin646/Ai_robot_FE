@@ -26,11 +26,18 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await login({ email, password });
+      await login({
+        email: email.trim().toLowerCase(),
+        password,
+      });
       navigate('/', { replace: true });
     } catch (err: any) {
       console.warn('Login error:', err);
-      const msg = err.response?.data?.error?.message || err.message;
+      const msg =
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        (typeof err.response?.data?.error === 'string' ? err.response?.data?.error : null) ||
+        err.message;
       setError(msg || 'Failed to connect to backend. Verify server is running.');
     } finally {
       setLoading(false);

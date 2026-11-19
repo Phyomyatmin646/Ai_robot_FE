@@ -36,7 +36,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
   const navItems = [
     { to: '/', label: 'Home / Robot Hub', icon: Sparkles, badge: 'Main' },
     { to: '/audio', label: 'Stories & Songs (ပုံပြင်/သီချင်း)', icon: Music2, highlight: true },
-    { to: '/conversations', label: 'Kids Voice Chat (စကားပြော)', icon: Mic },
     { to: '/reminders', label: 'Routines & Alarms (သတိပေးသံ)', icon: Clock },
     { to: '/settings', label: 'Robot Sound & Voice (အသံ/မီး)', icon: Sliders },
     { to: '/devices', label: 'Robot Connection (စက်ချိတ်ဆက်မှု)', icon: Wifi },

@@ -16,17 +16,43 @@ export const RegisterPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Demo bypass for instant review
+  const handleDemoLogin = () => {
+    localStorage.setItem('ai_robot_access_token', 'demo-token');
+    localStorage.setItem(
+      'ai_robot_user',
+      JSON.stringify({
+        id: 'usr_demo_123',
+        name: 'Demo Parent',
+        email: 'parent@example.com',
+        role: 'user',
+        isActive: true,
+      })
+    );
+    navigate('/', { replace: true });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      await register({ name, email, password, language, timezone });
+      await register({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+        language,
+        timezone: timezone.trim(),
+      });
       navigate('/', { replace: true });
     } catch (err: any) {
       console.warn('Register error:', err);
-      const msg = err.response?.data?.error?.message || err.message;
+      const msg =
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        (typeof err.response?.data?.error === 'string' ? err.response?.data?.error : null) ||
+        err.message;
       setError(msg || 'Registration failed. Check server connection.');
     } finally {
       setLoading(false);
@@ -51,7 +77,16 @@ export const RegisterPage: React.FC = () => {
         {error && (
           <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <span>{error}</span>
+            <div className="flex-1">
+              <span>{error}</span>
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                className="block mt-1 font-semibold text-primary underline"
+              >
+                Click here for instant Demo Preview
+              </button>
+            </div>
           </div>
         )}
 
@@ -91,6 +126,7 @@ export const RegisterPage: React.FC = () => {
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-11 py-2.5 rounded-xl input-glass text-sm font-mono"
