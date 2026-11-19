@@ -43,6 +43,16 @@ export default defineConfig({
           proxy.on('error', () => {
             // Suppress terminal ECONNREFUSED logs when backend is offline
           });
+          proxy.on('proxyReqWs', (_proxyReq, _req, socket) => {
+            socket.on('error', () => {
+              // Suppress client socket errors (ECONNRESET, EPIPE)
+            });
+          });
+          proxy.on('open', (proxySocket) => {
+            proxySocket.on('error', () => {
+              // Suppress remote proxy socket errors (ECONNRESET, EPIPE)
+            });
+          });
         },
       },
     },
