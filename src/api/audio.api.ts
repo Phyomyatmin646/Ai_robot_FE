@@ -42,5 +42,14 @@ export const audioApi = {
     const res = await apiClient.delete<ApiResponse<{ deleted: boolean }>>(`/audio/${id}`);
     return res.data;
   },
+
+  uploadAudio: async (formData: FormData) => {
+    const res = await apiClient.post<ApiResponse<AudioMetadata>>('/audio/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
 };
 
