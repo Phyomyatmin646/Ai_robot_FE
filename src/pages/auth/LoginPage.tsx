@@ -30,7 +30,10 @@ export const LoginPage: React.FC = () => {
       navigate('/', { replace: true });
     } catch (err: any) {
       console.warn('Login error:', err);
-      const msg = err.response?.data?.error?.message || err.message;
+      let msg = err.response?.data?.error?.message || err.message;
+      if (err.code === 'ECONNABORTED' || msg?.includes('timeout') || msg?.includes('Network Error')) {
+        msg = 'Cloud Backend Server သို့ ချိတ်ဆက်မရပါ (Server မဖွင့်ထားပါ သို့မဟုတ် မရောက်ပါ)။';
+      }
       setError(msg || 'Failed to connect to backend. Verify server is running.');
     } finally {
       setLoading(false);
@@ -84,7 +87,7 @@ export const LoginPage: React.FC = () => {
                 onClick={handleDemoLogin}
                 className="block mt-1 font-semibold text-primary underline"
               >
-                Click here for instant Demo Preview
+                Click here for instant Demo Preview (စမ်းသပ်အသုံးပြုရန် ချက်ချင်းဝင်မည်)
               </button>
             </div>
           </div>
