@@ -141,11 +141,10 @@ export const DeviceDetailPage: React.FC = () => {
                   const isOnline = liveStatus === 'online';
                   return (
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-medium flex items-center gap-1.5 ${
-                        isOnline
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-medium flex items-center gap-1.5 ${isOnline
                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                           : 'bg-neutral-border/60 text-neutral-slate border border-neutral-border'
-                      }`}
+                        }`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-400'}`} />
                       {liveStatus}
@@ -318,11 +317,10 @@ export const DeviceDetailPage: React.FC = () => {
                     key={mode.id}
                     type="button"
                     onClick={() => setResponseMode(mode.id as typeof responseMode)}
-                    className={`p-2.5 rounded-xl text-xs font-medium border text-center transition-all ${
-                      responseMode === mode.id
+                    className={`p-2.5 rounded-xl text-xs font-medium border text-center transition-all ${responseMode === mode.id
                         ? 'bg-primary/10 border-primary text-primary font-semibold'
                         : 'border-neutral-border text-neutral-slate hover:bg-neutral-border/30'
-                    }`}
+                      }`}
                   >
                     {mode.label}
                   </button>
@@ -353,11 +351,10 @@ export const DeviceDetailPage: React.FC = () => {
                 return (
                   <div
                     key={padNum}
-                    className={`p-4 rounded-2xl border text-center transition-all duration-200 ${
-                      isTouched
+                    className={`p-4 rounded-2xl border text-center transition-all duration-200 ${isTouched
                         ? 'bg-primary text-white border-primary shadow-glow-violet scale-105'
                         : 'bg-canvas-light border-neutral-border text-neutral-void'
-                    }`}
+                      }`}
                   >
                     <span className="text-[10px] font-mono uppercase text-neutral-slate">PAD #{padNum}</span>
                     <p className="text-sm font-bold mt-1">
